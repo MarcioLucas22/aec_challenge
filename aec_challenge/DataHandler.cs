@@ -1,9 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 
 namespace aec_challenge
 {
+    public class SearchResult
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Instructor { get; set; }
+        public string Workload { get; set; }
+    }
+
     internal class DataHandler
     {
         private static readonly string databasePath;
@@ -47,7 +57,7 @@ namespace aec_challenge
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao criar tabela: {ex.Message}");
+                Console.WriteLine($"ERROR: {ex.Message}");
                 Console.WriteLine(ex.StackTrace);
             }
         }
@@ -72,8 +82,7 @@ namespace aec_challenge
                         cmd.Parameters.AddWithValue("@instructor", instructor);
                         cmd.Parameters.AddWithValue("@workload", workload);
 
-                        int rowsAffected = cmd.ExecuteNonQuery();
-                        Console.WriteLine($"{rowsAffected} linhas inseridas na tabela.");
+                        cmd.ExecuteNonQuery();                        
                     }
 
                     connection.Close();
@@ -81,9 +90,47 @@ namespace aec_challenge
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao criar tabela: {ex.Message}");
+                Console.WriteLine($"ERROR: {ex.Message}");
                 Console.WriteLine(ex.StackTrace);
             }
+        }
+
+        public static List<SearchResult> GetAllTitles()
+        {
+            var results = new List<SearchResult>();
+
+            try
+            {                
+                using (SQLiteConnection connection = new SQLiteConnection(databasePath))
+                {
+                    connection.Open();
+
+                    string selectQuery = "SELECT Title FROM SearchResults";
+
+                    using (SQLiteCommand cmd = new SQLiteCommand(selectQuery, connection))
+                    {
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var result = new SearchResult
+                                {
+                                    Title = reader["Title"].ToString(),
+                                };
+
+                                results.Add(result);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+            }
+
+            return results;
         }
     }
 }

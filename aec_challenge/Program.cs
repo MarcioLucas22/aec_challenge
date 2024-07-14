@@ -9,25 +9,26 @@ namespace aec_challenge
     {
         static void Main(string[] args)
         {
+            // Cria a tabela no SQLite caso não exista
             DataHandler.CreateTable();                
 
             for (int i = 1; i <= 3; i++)
             {
-                WebDriverConfig config = new WebDriverConfig();
-                IWebDriver driver = config.Config();
+                IWebDriver driver = WebDriverConfig.Config();
 
                 // Se der algum erro, aumenta 1 segundo no tempo de espera do elemento
                 int timeWaitElements = i;
 
                 try
                 {
+                    // Inicia tempo de execução
                     Stopwatch stopwatch = Stopwatch.StartNew();
 
-                    GetAllSearchElements getElements = new GetAllSearchElements();
-                    getElements.GetInfos(driver, timeWaitElements);
+                    GetAllSearchItems.GetInfos(driver, timeWaitElements);
 
                     driver.Quit();
 
+                    // Finaliza tempo de execução
                     stopwatch.Stop();                    
 
                     double elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000.0;

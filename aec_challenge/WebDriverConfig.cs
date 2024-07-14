@@ -6,7 +6,7 @@ namespace aec_challenge
 {
     internal class WebDriverConfig
     {
-        public IWebDriver Config()
+        public static IWebDriver Config()
         {
             ChromeOptions options = new ChromeOptions();
             options.AddArgument("--start-maximized");
